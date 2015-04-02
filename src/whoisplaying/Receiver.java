@@ -94,6 +94,28 @@ public class Receiver implements Runnable{
                     insta.jtm.addRow(new String[]{receivePacket.getAddress().getHostAddress(), info.game,info.map,(((256+info.players)%256)-((256+info.bots)%256)) + " P + " + ((256+info.bots)%256) + " Bot",info.name});
                     count++;
                 } //if ends
+                if(nextNum1(receiveData,offset)==73){
+                    info.protocol=nextNum1(receiveData,offset);
+                    //info.addr = nextString(receiveData,offset);
+                    info.name =nextString(receiveData,offset);
+                    info.map=nextString(receiveData,offset);
+                    info.folder=nextString(receiveData,offset);
+                    nextNum2(receiveData,offset);
+                    info.players=nextNum1(receiveData,offset);
+                    info.maxplayers=nextNum1(receiveData,offset);
+                    info.bots=nextNum1(receiveData,offset);
+                    info.servertype = nextNum1(receiveData,offset);
+                    info.environment=nextNum1(receiveData,offset);
+                    info.visibility=nextNum1(receiveData,offset);
+                    
+                    info.vac=nextNum1(receiveData,offset);
+                                     
+                    
+
+                    
+                    insta.jtm.addRow(new String[]{receivePacket.getAddress().getHostAddress(), info.game,info.map,(((256+info.players)%256)-((256+info.bots)%256)) + " P + " + ((256+info.bots)%256) + " Bot",info.name});
+                    count++;
+                } //if ends
             
     }
     public static String nextString(byte [] array, int [] offset) throws Exception{
