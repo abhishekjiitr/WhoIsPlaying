@@ -46,7 +46,6 @@ public class Sender implements Runnable {
                 sendData[i]=(byte)Integer.parseInt(queryStr.substring(2*i,2*i+2),16);
             }
 
-
             byte [] ip={-1,-1,-1,-1};
             InetAddress address = InetAddress.getByAddress(ip);
 
@@ -54,30 +53,50 @@ public class Sender implements Runnable {
                     sendData, sendData.length, address, 27015
                     );
 
-
+            //System.out.prnt
             DatagramSocket datagramSocket = new DatagramSocket();
             System.out.println("Starting Receiver thread.");
-            
+
             rec=new Receiver(datagramSocket, insta);
             Thread recTh = new Thread(rec);
             recTh.start();
-            for(int port=27015; port<=27020; port++){
-                packet.setPort(port);
-                datagramSocket.send(packet);
+
+            try{
+
+                   for(int port=27015; port<=27020; port++){
+                    packet.setPort(port);
+                    datagramSocket.send(packet);
+                }
+
+
+
+                packet.setPort(27015);
+                for(Object row : insta.jtm.getDataVector()){
+                    try{
+                        String s=(String)((Vector)row).elementAt(0);
+                        if(s.startsWith("1")){
+                            packet.setAddress(InetAddress.getByName(s));
+                            datagramSocket.send(packet);
+                        }
+                    }catch(Exception e){}
+
+                }
+            }catch(java.io.IOException e)
+            {
+                insta.jtm.addRow(new String[] {"Network error."});
             }
             
-            
-            
             packet.setPort(27015);
-            for(Object row : insta.jtm.getDataVector()){
-                try{
-                    String s=(String)((Vector)row).elementAt(0);
-                    if(s.startsWith("1")){
-                        packet.setAddress(InetAddress.getByName(s));
-                        datagramSocket.send(packet);
-                    }
-                }catch(Exception e){}
+            if(sr.scanSelf){
+                System.out.println("SELF");
+                ip[0]=127;
+                ip[1]=0;
+                ip[2]=0;
+                ip[3]=1;
                 
+                packet.setAddress(InetAddress.getByAddress(ip));
+                datagramSocket.send(packet);
+                insta.progi.setValue(insta.progi.getValue()+1);
             }
             
             
@@ -148,8 +167,21 @@ public class Sender implements Runnable {
                     if(ip[1]==(byte)sr.maxa2) break;
                 }
             }
-          
-            System.out.println("Sleeping.");
+            
+        }
+        catch(java.io.IOException e)
+        {
+            insta.jtm.addRow(new String[] {"Network error."});
+            insta.status=2;
+            status=1;
+            stop();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+       
+            
             //Thread.sleep(800);
             rec.status=1;
             //recTh.join();
@@ -157,16 +189,8 @@ public class Sender implements Runnable {
             
             
             System.out.println("Sender thread joined Receiver both ended.");
-        }catch(java.io.IOException e){
-            insta.jtm.addRow(new String[] {"Network error."});
-            insta.status=2;
-            status=1;
-            stop();
-        }catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-    }   
+    }
+    
     public void stop(){
         rec.status=1;
         

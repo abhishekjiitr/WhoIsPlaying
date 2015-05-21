@@ -10,8 +10,10 @@ package whoisplaying;
  * @author tanmay
  */
 public class ServerInfo {
+    java.net.InetAddress realip;        //this is the ip from which packet was received
     byte type; // = 109 for old, 79 for new
     String addr,name,map,folder,game,modlink,moddownlink;
     byte players,maxplayers,bots,protocol,servertype,environment,visibility,mod,modtype,moddll,vac;
     int modversion,modsize;
+    PlayerInfo playerinfo;
 }

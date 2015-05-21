@@ -39,7 +39,7 @@ public class Receiver implements Runnable{
                 }catch(java.net.SocketTimeoutException e){if(status==1)break; else continue;}
                 //String sentence = new String(receivePacket.getData(), 0,
                  //                receivePacket.getLength());
-                addServer(receiveData,receivePacket);
+                parsePacket(receiveData,receivePacket);
             }
             insta.progi.setValue(0);
             if(count==0)insta.jtm.addRow(new Object[]{"No servers found."});
@@ -52,72 +52,123 @@ public class Receiver implements Runnable{
         
 
     }
-    public void addServer(byte [] receiveData, DatagramPacket receivePacket) throws Exception{
-                for(Object row : insta.jtm.getDataVector()){
-                    if(receivePacket.getAddress().getHostAddress().equals(((Vector)row).elementAt(0))){
-                        System.out.println("Already exists in table.");
-                        return;
-                    }
-                }
-                int [] offset = {0};
-                
-                if(nextNum4(receiveData,offset) != -1) return;
-                ServerInfo info = new ServerInfo();
-                if(nextNum1(receiveData,offset)==109){
-                    info.addr = nextString(receiveData,offset);
-                    info.name =nextString(receiveData,offset);
-                    info.map=nextString(receiveData,offset);
-                    info.folder=nextString(receiveData,offset);
-                    info.game=nextString(receiveData,offset);
-                    info.players=nextNum1(receiveData,offset);
-                    info.maxplayers=nextNum1(receiveData,offset);
-                    info.protocol=nextNum1(receiveData,offset);
-                    info.servertype = nextNum1(receiveData,offset);
-                    info.environment=nextNum1(receiveData,offset);
-                    info.visibility=nextNum1(receiveData,offset);
-                    info.mod=nextNum1(receiveData,offset);
-                    
-                    if (info.mod==1) {
-                        info.modlink=nextString(receiveData,offset);
-                        info.moddownlink=nextString(receiveData,offset);
-                        if(nextNum1(receiveData,offset) != 0)
-                            System.out.println("Warning: Null bit not Null.");
-                        info.modversion=nextNum4(receiveData,offset);
-                        info.modsize=nextNum4(receiveData,offset);
-                        info.modtype=nextNum1(receiveData,offset);
-                        info.moddll=nextNum1(receiveData,offset);
-                    }
-                    info.vac=nextNum1(receiveData,offset);
-                    info.bots=nextNum1(receiveData,offset);
+    public void parsePacket(byte [] receiveData, DatagramPacket receivePacket) throws Exception{
+        
+        int [] offset = {0};
+        
+        if(nextNum4(receiveData,offset) != -1) return;
+        
+        byte header = nextNum1(receiveData,offset);
+        
+        for(Object row : insta.jtm.getDataVector()){
+            if(receivePacket.getAddress().getHostAddress().equals(((Vector)row).elementAt(0))){
+                System.out.println("Already exists in table.");
+                return;
+            }
+        }
 
-                    
-                    insta.jtm.addRow(new String[]{receivePacket.getAddress().getHostAddress(), info.game,info.map,(((256+info.players)%256)-((256+info.bots)%256)) + " P + " + ((256+info.bots)%256) + " Bot",info.name});
-                    count++;
-                } //if ends
-                if(nextNum1(receiveData,offset)==73){
-                    info.protocol=nextNum1(receiveData,offset);
-                    //info.addr = nextString(receiveData,offset);
-                    info.name =nextString(receiveData,offset);
-                    info.map=nextString(receiveData,offset);
-                    info.folder=nextString(receiveData,offset);
-                    nextNum2(receiveData,offset);
-                    info.players=nextNum1(receiveData,offset);
-                    info.maxplayers=nextNum1(receiveData,offset);
-                    info.bots=nextNum1(receiveData,offset);
-                    info.servertype = nextNum1(receiveData,offset);
-                    info.environment=nextNum1(receiveData,offset);
-                    info.visibility=nextNum1(receiveData,offset);
-                    
-                    info.vac=nextNum1(receiveData,offset);
-                                     
-                    
 
-                    
-                    insta.jtm.addRow(new String[]{receivePacket.getAddress().getHostAddress(), info.game,info.map,(((256+info.players)%256)-((256+info.bots)%256)) + " P + " + ((256+info.bots)%256) + " Bot",info.name});
-                    count++;
-                } //if ends
+
+        
+        if(header==109){        //m
+            addmServer(receiveData,receivePacket,offset);
+        } //if ends
+        else if(header==73){    //I
+            addIServer(receiveData,receivePacket,offset);
+        } //if ends
+        else{
+            System.out.println("Unsupported Packet. Header is" + header + ".");
+        }
             
     }
+    
+    
+    public void addmServer(byte [] receiveData, DatagramPacket receivePacket, int [] offset) throws Exception{       //old
+        ServerInfo info = new ServerInfo();
+        
+        info.type=109;
+        info.realip = receivePacket.getAddress();
+        info.addr = nextString(receiveData,offset);
+        info.name =nextString(receiveData,offset);
+        info.map=nextString(receiveData,offset);
+        
+        for(ServerInfo servu : insta.servers){
+            if(info.addr.equals(servu.addr) && info.map.equals(servu.map)){
+                System.out.println("Already exists in server list.");
+                return;
+            }
+        }
+
+        info.folder=nextString(receiveData,offset);
+        info.game=nextString(receiveData,offset);
+        info.players=nextNum1(receiveData,offset);
+        info.maxplayers=nextNum1(receiveData,offset);
+        info.protocol=nextNum1(receiveData,offset);
+        info.servertype = nextNum1(receiveData,offset);
+        info.environment=nextNum1(receiveData,offset);
+        info.visibility=nextNum1(receiveData,offset);
+        info.mod=nextNum1(receiveData,offset);
+
+        if (info.mod==1) {
+            info.modlink=nextString(receiveData,offset);
+            info.moddownlink=nextString(receiveData,offset);
+            if(nextNum1(receiveData,offset) != 0)
+                System.out.println("Warning: Null bit not Null.");
+            info.modversion=nextNum4(receiveData,offset);
+            info.modsize=nextNum4(receiveData,offset);
+            info.modtype=nextNum1(receiveData,offset);
+            info.moddll=nextNum1(receiveData,offset);
+        }
+        info.vac=nextNum1(receiveData,offset);
+        info.bots=nextNum1(receiveData,offset);
+
+        insta.servers.add(info);
+        info.getPlayerInfo();
+        insta.jtm.addRow(new String[]{info.realip.getHostAddress(), info.game,info.map,(((256+info.players)%256)-((256+info.bots)%256)) + " P + " + ((256+info.bots)%256) + " Bot",info.name});
+        count++;
+    }
+    
+    public void addIServer(byte [] receiveData, DatagramPacket receivePacket, int [] offset) throws Exception{       //new
+            ServerInfo info = new ServerInfo();
+            
+            info.type=73;
+            info.realip = receivePacket.getAddress();
+            info.addr= info.realip.getHostAddress();
+
+            info.protocol=nextNum1(receiveData,offset);
+            //info.addr = nextString(receiveData,offset);
+            info.name =nextString(receiveData,offset);
+            info.map=nextString(receiveData,offset);
+
+            for(ServerInfo servu : insta.servers){
+                if(info.addr.equals(servu.addr) && info.map.equals(servu.map)){
+                    System.out.println("Already exists in server list.");
+                    return;
+                }
+            }
+
+            info.folder=nextString(receiveData,offset);
+            info.game=nextString(receiveData,offset);
+            nextNum2(receiveData,offset);
+            info.players=nextNum1(receiveData,offset);
+            info.maxplayers=nextNum1(receiveData,offset);
+            info.bots=nextNum1(receiveData,offset);
+            info.servertype = nextNum1(receiveData,offset);
+            info.environment=nextNum1(receiveData,offset);
+            info.visibility=nextNum1(receiveData,offset);
+
+            info.vac=nextNum1(receiveData,offset);
+
+            insta.servers.add(info);
+            info.getPlayerInfo();
+
+
+
+            insta.jtm.addRow(new String[]{receivePacket.getAddress().getHostAddress(), info.game,info.map,(((256+info.players)%256)-((256+info.bots)%256)) + " P + " + ((256+info.bots)%256) + " Bot",info.name});
+            count++;
+        
+    }
+    
     public static String nextString(byte [] array, int [] offset) throws Exception{
         int temp = offset[0];
         while(array[offset[0]++] != 0);
