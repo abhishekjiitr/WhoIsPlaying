@@ -34,7 +34,7 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" pref="476" max="32767" attributes="0"/>
                   <Component id="jPanel2" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <Component id="jButton1" min="-2" pref="96" max="-2" attributes="0"/>
@@ -97,9 +97,10 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <Group type="103" groupAlignment="1" attributes="0">
+                  <Group type="103" groupAlignment="1" attributes="0">
+                      <Component id="jLabel2" min="-2" pref="17" max="-2" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="jCheckBox3" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -112,17 +113,22 @@
                                       <Component id="jTextField11" alignment="1" min="-2" pref="82" max="-2" attributes="0"/>
                                       <Component id="jTextField10" alignment="1" min="-2" pref="82" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="checkLoopBack" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="jLabel5" min="-2" pref="11" max="-2" attributes="0"/>
                                       <Component id="jLabel4" min="-2" pref="12" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="jTextField5" alignment="1" min="-2" pref="82" max="-2" attributes="0"/>
-                                      <Component id="jTextField9" alignment="1" min="-2" pref="82" max="-2" attributes="0"/>
-                                      <Component id="jTextField3" alignment="1" min="-2" pref="82" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                      <Component id="jTextField5" pref="82" max="32767" attributes="0"/>
+                                      <Component id="jTextField9" pref="82" max="32767" attributes="0"/>
+                                      <Component id="jTextField3" pref="82" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
@@ -132,6 +138,14 @@
                                       </Group>
                                       <Component id="jLabel6" min="-2" pref="7" max="-2" attributes="0"/>
                                   </Group>
+                              </Group>
+                              <Group type="102" attributes="0">
+                                  <EmptySpace min="12" pref="12" max="-2" attributes="0"/>
+                                  <Component id="checkBroadcast" min="-2" pref="103" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
                                   <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="1" max="-2" attributes="0">
                                       <Component id="jTextField6" alignment="1" min="-2" pref="82" max="-2" attributes="0"/>
@@ -139,8 +153,15 @@
                                       <Component id="jTextField1" alignment="1" min="-2" pref="82" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
-                              <Component id="jLabel2" min="-2" pref="17" max="-2" attributes="0"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Component id="checkPrev" min="-2" pref="71" max="-2" attributes="0"/>
+                              </Group>
                           </Group>
+                      </Group>
+                  </Group>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
                           <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="jLabel10" alignment="1" pref="11" max="32767" attributes="0"/>
@@ -155,9 +176,8 @@
                           </Group>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="checkLoopBack" min="-2" pref="143" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="114" max="-2" attributes="0"/>
-                          <Component id="jCheckBox4" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="textPort" min="-2" pref="82" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
@@ -232,16 +252,13 @@
                       </Group>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Group type="102" attributes="0">
-                          <Component id="jCheckBox4" min="-2" pref="21" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="102" attributes="0">
-                          <Component id="checkLoopBack" max="32767" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                      </Group>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="checkLoopBack" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="checkBroadcast" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="checkPrev" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="textPort" alignment="3" min="-2" pref="22" max="-2" attributes="0"/>
                   </Group>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
               </Group>
           </Group>
@@ -262,7 +279,7 @@
         </Component>
         <Component class="javax.swing.JTextField" name="jTextField1">
           <Properties>
-            <Property name="text" type="java.lang.String" value="3"/>
+            <Property name="text" type="java.lang.String" value="0"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="jTextField2">
@@ -380,16 +397,27 @@
             <Property name="text" type="java.lang.String" value="."/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="jCheckBox4">
-          <Properties>
-            <Property name="selected" type="boolean" value="true"/>
-            <Property name="text" type="java.lang.String" value="flush Old Output"/>
-          </Properties>
-        </Component>
         <Component class="javax.swing.JCheckBox" name="checkLoopBack">
           <Properties>
             <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" value="loop Back"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="checkBroadcast">
+          <Properties>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="broadcast"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="checkPrev">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Prev"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="textPort">
+          <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+            <Property name="text" type="java.lang.String" value="27015"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -406,7 +434,7 @@
         <Component class="javax.swing.JTable" name="jTable1">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="new javax.swing.table.AbstractTableModel()&#xa;{&#xa;    String [] columnnames= &#xa;        {&quot;IP&quot;, &quot;game&quot;, &quot;map&quot;, &quot;players&quot;, &quot;server Name&quot;};&#xa;&#xa;    Class [] columntypes=&#xa;        {java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class};&#xa;    &#xa;        &#xa;    public Object getValueAt(int row, int column){&#xa;        switch(column){&#xa;            case 0:&#xa;                return servers.elementAt(row).realip.getHostAddress();&#xa;            case 1:&#xa;                return servers.elementAt(row).game;&#xa;            case 2:&#xa;                return servers.elementAt(row).map;&#xa;            case 3:&#xa;                return (servers.elementAt(row).players-servers.elementAt(row).bots) + &quot; P + &quot; + servers.elementAt(row).bots + &quot; Bots&quot;;&#xa;            case 4:&#xa;                return servers.elementAt(row).name;&#xa;            default:&#xa;                return null;&#xa;        }&#xa;    }&#xa;&#xa;&#xa;&#xa;    public String getColumnName(int column) {&#xa;        return columnnames[column];&#xa;    }&#xa;        &#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return columntypes[columnIndex];&#xa;    }&#xa;    public int getColumnCount(){&#xa;        return columnnames.length;&#xa;    }&#xa;    public int getRowCount(){&#xa;        return servers.size();&#xa;    }&#xa;        &#xa;    &#xa;}" type="code"/>
+              <Connection code="new javax.swing.table.AbstractTableModel()&#xa;{&#xa;    String [] columnnames= &#xa;        {&quot;IP&quot;, &quot;Game&quot;, &quot;Map&quot;, &quot;Players&quot;, &quot;Server-Name&quot;};&#xa;&#xa;    Class [] columntypes=&#xa;        {java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class};&#xa;    &#xa;        &#xa;    public Object getValueAt(int row, int column){&#xa;        switch(column){&#xa;            case 0:&#xa;                return servers.elementAt(row).realip.getHostAddress();&#xa;            case 1:&#xa;                return servers.elementAt(row).game;&#xa;            case 2:&#xa;                return servers.elementAt(row).map;&#xa;            case 3:&#xa;                return (servers.elementAt(row).players-servers.elementAt(row).bots) + &quot; P + &quot; + servers.elementAt(row).bots + &quot; Bots&quot;;&#xa;            case 4:&#xa;                return servers.elementAt(row).name;&#xa;            default:&#xa;                return null;&#xa;        }&#xa;    }&#xa;&#xa;&#xa;&#xa;    public String getColumnName(int column) {&#xa;        return columnnames[column];&#xa;    }&#xa;        &#xa;    public Class getColumnClass(int columnIndex) {&#xa;        return columntypes[columnIndex];&#xa;    }&#xa;    public int getColumnCount(){&#xa;        return columnnames.length;&#xa;    }&#xa;    public int getRowCount(){&#xa;        return servers.size();&#xa;    }&#xa;        &#xa;    &#xa;}" type="code"/>
             </Property>
             <Property name="autoResizeMode" type="int" value="4"/>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
@@ -435,8 +463,11 @@
     </Component>
     <Component class="javax.swing.JLabel" name="labelStatus">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Error"/>
+        <Property name="text" type="java.lang.String" value="Click Scan to Start."/>
       </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+      </AuxValues>
     </Component>
   </SubComponents>
 </Form>

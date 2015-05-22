@@ -18,13 +18,14 @@ public class Sender implements Runnable {
     Receiver rec;
     public int status=0; // 0 means running
     
-    public static final String queryStr="ffffffff54536f7572636520456e67696e6520517565727900";
+    public static final String queryStr = "ffffffff54536f7572636520456e67696e6520517565727900";
+    public int port = 27015;
     /**
      * @param args the command line arguments
      */
-    public Sender(Main inst,boolean flushOutput, ScanRange sr){
+    public Sender(Main inst,ScanRange sr,int port){
         insta=inst;
-        
+        this.port = port;
         this.flushOutput=flushOutput;
         this.sr=sr;
         insta.progi.setMaximum(sr.total+1 +sr.total/9);
@@ -35,45 +36,20 @@ public class Sender implements Runnable {
         try{
             System.out.println("Starting Sender thread.");
             
-            //if(flushOutput)
-            //    while(insta.jtm.getRowCount()>0)
-           //         insta.jtm.removeRow(0);
-            //else
-            //    insta.jtm.addRow(new String[] {"----"});
-            
-            
-            insta.servers.clear();
             
             byte[] sendData = new byte[queryStr.length()/2];
             for(int i = 0; i< queryStr.length()/2;i++){
                 sendData[i]=(byte)Integer.parseInt(queryStr.substring(2*i,2*i+2),16);
             }
 
-            byte [] ip={-1,-1,-1,-1};
-            InetAddress address = InetAddress.getByAddress(ip);
 
             DatagramPacket packet =new DatagramPacket( 
-                    sendData, sendData.length, address, 27015
+                    sendData, sendData.length, null, port
                     );
-
-            //System.out.prnt
             DatagramSocket datagramSocket = new DatagramSocket();
-            System.out.println("Starting Receiver thread.");
-
-            rec=new Receiver(datagramSocket, insta);
-            Thread recTh = new Thread(rec);
-            recTh.start();
-
-            try{
-
-                   for(int port=27015; port<=27020; port++){
-                    packet.setPort(port);
-                    datagramSocket.send(packet);
-                }
-
-
-
-                packet.setPort(27015);
+            
+            
+            if(sr.scanPrev){
                 for(Object row : insta.servers){
                     try{
                         ServerInfo s=((ServerInfo)row);
@@ -81,117 +57,157 @@ public class Sender implements Runnable {
                         packet.setAddress(s.realip);
                         datagramSocket.send(packet);
                     
-                    }catch(Exception e){}
+                    }catch(Exception e){reportError(e);}
 
                 }
-            }catch(java.io.IOException e)
-            {
-                //insta.jtm.addRow(new String[] {"Network error.","Network error.","Network error.","Network error.","Network error.","Network error.","Network error.","Network error.","Network error.","Network error."});
             }
             
-            packet.setPort(27015);
+            insta.servers.clear();
+            
+            
+            
+            
+            System.out.println("Starting Receiver thread.");
+
+            rec=new Receiver(datagramSocket, insta);
+            Thread recTh = new Thread(rec);
+            recTh.start();
+            
+            byte [] ip={-1,-1,-1,-1};
+            InetAddress address = InetAddress.getByAddress(ip);
+            
+            
+            
+            if(sr.scanBroadcast){
+                try{
+                    ip[0]=-1;ip[1]=-1;ip[2]=-1;ip[3]=-1;
+                    address = InetAddress.getByAddress(ip);
+                    packet.setAddress(address);
+                    datagramSocket.send(packet);
+                }catch(java.io.IOException e)
+                {
+                    reportError(e);
+                }
+            }
+            
+            
             if(sr.scanSelf){
                 
                 packet.setAddress(InetAddress.getLocalHost());
-                datagramSocket.send(packet);
-                insta.progi.setValue(insta.progi.getValue()+1);
+                try{
+                    datagramSocket.send(packet);
+                }catch(Exception e)
+                {
+                    reportError(e);
+                }
             }
             
             
-            if(sr.scanC){
-                ip[0]=192-256;
-                ip[1]=168-256;
+            try{
+                if(sr.scanC){
+                    ip[0]=192-256;
+                    ip[1]=168-256;
+
+                    for(ip[2]=(byte)sr.minc3; ;ip[2]++){
+                        //System.out.println(InetAddress.getByAddress(ip).getHostAddress());
+                        for(ip[3]=0;;ip[3]++){
+                            packet.setAddress(InetAddress.getByAddress(ip));
+                            datagramSocket.send(packet);
+
+
+                            if(ip[3]==-1) break;
+                        }
+                        if(status==1) {
+                            stop();
+                            return;
+                        }
+                        insta.progi.setValue(insta.progi.getValue()+1);
+                        if(ip[2]==(byte)sr.maxc3) break;
+                    }
+
+                }
+            }catch(Exception e){
+                reportError(e);
+            }
+            
+            try{
+                if(sr.scanB){
+                    ip[0]=172-256;
+                    for(ip[1]=(byte)sr.minb2; ;ip[1]++){
+                        for(ip[2]=(byte)sr.minb3; ;ip[2]++){
+                            //System.out.println(InetAddress.getByAddress(ip).getHostAddress());
+                            for(ip[3]=0;;ip[3]++){
+                                packet.setAddress(InetAddress.getByAddress(ip));
+                                datagramSocket.send(packet);
+
+
+                                if(ip[3]==-1) break;
+                            }
+                            if(status==1) {
+                                stop();
+                                return;
+                            }
+                            insta.progi.setValue(insta.progi.getValue()+1);
+                            if(ip[2]==(byte)sr.maxb3) break;
+                        }
+                        if(ip[1]==(byte)sr.maxb2) break;
+                    }
+                }
+            }catch(Exception e){
                 
-                for(ip[2]=(byte)sr.minc3; ;ip[2]++){
-                    //System.out.println(InetAddress.getByAddress(ip).getHostAddress());
-                    for(ip[3]=0;;ip[3]++){
-                        packet.setAddress(InetAddress.getByAddress(ip));
-                        datagramSocket.send(packet);
-
-                        
-                        if(ip[3]==-1) break;
-                    }
-                    if(status==1) {
-                        stop();
-                        return;
-                    }
-                    insta.progi.setValue(insta.progi.getValue()+1);
-                    if(ip[2]==(byte)sr.maxc3) break;
-                }
-
-            }
-            if(sr.scanB){
-                ip[0]=172-256;
-                for(ip[1]=(byte)sr.minb2; ;ip[1]++){
-                    for(ip[2]=(byte)sr.minb3; ;ip[2]++){
-                        //System.out.println(InetAddress.getByAddress(ip).getHostAddress());
-                        for(ip[3]=0;;ip[3]++){
-                            packet.setAddress(InetAddress.getByAddress(ip));
-                            datagramSocket.send(packet);
-
-                             
-                            if(ip[3]==-1) break;
-                        }
-                        if(status==1) {
-                            stop();
-                            return;
-                        }
-                        insta.progi.setValue(insta.progi.getValue()+1);
-                        if(ip[2]==(byte)sr.maxb3) break;
-                    }
-                    if(ip[1]==(byte)sr.maxb2) break;
-                }
+                reportError(e);
             }
             
-            if(sr.scanA){
-                ip[0]=10;
-                for(ip[1]=(byte)sr.mina2; ;ip[1]++){
-                    for(ip[2]=(byte)sr.mina3; ;ip[2]++){
-                        //System.out.println(InetAddress.getByAddress(ip).getHostAddress());
-                        for(ip[3]=0;;ip[3]++){
-                            packet.setAddress(InetAddress.getByAddress(ip));
-                            datagramSocket.send(packet);
+            try{
+                if(sr.scanA){
+                    ip[0]=10;
+                    for(ip[1]=(byte)sr.mina2; ;ip[1]++){
+                        for(ip[2]=(byte)sr.mina3; ;ip[2]++){
+                            //System.out.println(InetAddress.getByAddress(ip).getHostAddress());
+                            for(ip[3]=0;;ip[3]++){
+                                packet.setAddress(InetAddress.getByAddress(ip));
+                                datagramSocket.send(packet);
 
-                             
-                            if(ip[3]==-1) break;
+
+                                if(ip[3]==-1) break;
+                            }
+                            if(status==1) {
+                                stop();
+                                return;
+                            }
+                            insta.progi.setValue(insta.progi.getValue()+1);
+                            if(ip[2]==(byte)sr.maxa3) break;
                         }
-                        if(status==1) {
-                            stop();
-                            return;
-                        }
-                        insta.progi.setValue(insta.progi.getValue()+1);
-                        if(ip[2]==(byte)sr.maxa3) break;
+                        if(ip[1]==(byte)sr.maxa2) break;
                     }
-                    if(ip[1]==(byte)sr.maxa2) break;
                 }
+            }catch(Exception e){
+                reportError(e);
             }
             
-        }
-        catch(java.io.IOException e)
-        {
-            //insta.jtm.addRow(new String[] {"Network error."});
-            insta.status=2;
-            status=1;
-            stop();
+            
         }
         catch(Exception e)
         {
-            e.printStackTrace();
+            reportError(e);
         }
-       
-            
-            //Thread.sleep(800);
-            rec.status=1;
-            //recTh.join();
+        
+            insta.status=2;
+            status=1;
+            stop();
             insta.progi.setValue(insta.progi.getMaximum());
             
             
-            System.out.println("Sender thread joined Receiver both ended.");
+            System.out.println("Sender thread Ended.");
     }
     
     public void stop(){
         rec.status=1;
         
+    }
+    public void reportError(Exception e){
+        insta.labelStatus.setText("Error: " + e.getMessage());
+        e.printStackTrace();
     }
 }
  

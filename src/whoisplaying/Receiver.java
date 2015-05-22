@@ -37,23 +37,23 @@ public class Receiver implements Runnable{
             while(true){
                 try{
                     datagramSocket.receive(receivePacket);
-                }catch(java.net.SocketTimeoutException e){if(status==1)break; else continue;}
-                //String sentence = new String(receivePacket.getData(), 0,
-                 //                receivePacket.getLength());
+                }catch(java.net.SocketTimeoutException e){
+                    if(status==1)break; else continue;
+                }
                 parsePacket(receiveData,receivePacket);
             }
-            insta.progi.setValue(0);
-            //if(count==0)insta.jtm.addRow(new Object[]{"No servers found."});
-            insta.status=1;
-            insta.jb.setText("Scan");
+            
         }catch(Exception e)
         {
             e.printStackTrace();
         }
         
-
+        insta.progi.setValue(0);
+        insta.status=1;
+        insta.jb.setText("Scan");
     }
-    public void parsePacket(byte [] receiveData, DatagramPacket receivePacket) throws Exception{
+    
+    public void parsePacket(byte [] receiveData, DatagramPacket receivePacket){
         
         int [] offset = {0};
         
@@ -77,7 +77,7 @@ public class Receiver implements Runnable{
     }
     
     
-    public void addmServer(byte [] receiveData, DatagramPacket receivePacket, int [] offset) throws Exception{       //old
+    public void addmServer(byte [] receiveData, DatagramPacket receivePacket, int [] offset){      //old
         ServerInfo info = new ServerInfo();
         
         info.type=109;
@@ -88,7 +88,7 @@ public class Receiver implements Runnable{
         
         for(ServerInfo servu : insta.servers){
             if(info.addr.equals(servu.addr) && info.map.equals(servu.map)){
-                System.out.println("Already exists in server list.");
+//                System.out.println("Already exists in server list.");
                 return;
             }
         }
@@ -124,7 +124,7 @@ public class Receiver implements Runnable{
         count++;
     }
     
-    public void addIServer(byte [] receiveData, DatagramPacket receivePacket, int [] offset) throws Exception{       //new
+    public void addIServer(byte [] receiveData, DatagramPacket receivePacket, int [] offset){       //new
             ServerInfo info = new ServerInfo();
             
             info.type=73;
