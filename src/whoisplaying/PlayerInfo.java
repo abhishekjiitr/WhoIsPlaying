@@ -10,6 +10,6 @@ package whoisplaying;
  * @author tanmay
  */
 public class PlayerInfo {
-    byte players;
+    byte noofplayers;
     java.util.Collection<Player> playerlist;
 }

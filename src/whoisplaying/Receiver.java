@@ -26,9 +26,10 @@ public class Receiver implements Runnable{
     }
         @Override
     public void run() {
+        
         try{
             
-            byte[] receiveData = new byte[256];
+            byte[] receiveData = new byte[1400];
             DatagramPacket receivePacket = new DatagramPacket(receiveData,
                                receiveData.length);
 
@@ -42,7 +43,7 @@ public class Receiver implements Runnable{
                 parsePacket(receiveData,receivePacket);
             }
             insta.progi.setValue(0);
-            if(count==0)insta.jtm.addRow(new Object[]{"No servers found."});
+            //if(count==0)insta.jtm.addRow(new Object[]{"No servers found."});
             insta.status=1;
             insta.jb.setText("Scan");
         }catch(Exception e)
@@ -60,13 +61,6 @@ public class Receiver implements Runnable{
         
         byte header = nextNum1(receiveData,offset);
         
-        for(Object row : insta.jtm.getDataVector()){
-            if(receivePacket.getAddress().getHostAddress().equals(((Vector)row).elementAt(0))){
-                System.out.println("Already exists in table.");
-                return;
-            }
-        }
-
 
 
         
@@ -123,8 +117,10 @@ public class Receiver implements Runnable{
         info.bots=nextNum1(receiveData,offset);
 
         insta.servers.add(info);
+        insta.jtm.fireTableRowsInserted(insta.servers.size()-1, insta.servers.size()-1);
+        
         info.getPlayerInfo();
-        insta.jtm.addRow(new String[]{info.realip.getHostAddress(), info.game,info.map,(((256+info.players)%256)-((256+info.bots)%256)) + " P + " + ((256+info.bots)%256) + " Bot",info.name});
+        //insta.jtm.addRow(new String[]{info.realip.getHostAddress(), info.game,info.map,(((256+info.players)%256)-((256+info.bots)%256)) + " P + " + ((256+info.bots)%256) + " Bot",info.name});
         count++;
     }
     
@@ -160,19 +156,26 @@ public class Receiver implements Runnable{
             info.vac=nextNum1(receiveData,offset);
 
             insta.servers.add(info);
+            insta.jtm.fireTableRowsInserted(insta.servers.size()-1, insta.servers.size()-1);
+            
             info.getPlayerInfo();
 
 
 
-            insta.jtm.addRow(new String[]{receivePacket.getAddress().getHostAddress(), info.game,info.map,(((256+info.players)%256)-((256+info.bots)%256)) + " P + " + ((256+info.bots)%256) + " Bot",info.name});
+            //insta.jtm.addRow(new String[]{receivePacket.getAddress().getHostAddress(), info.game,info.map,(((256+info.players)%256)-((256+info.bots)%256)) + " P + " + ((256+info.bots)%256) + " Bot",info.name});
             count++;
         
     }
     
-    public static String nextString(byte [] array, int [] offset) throws Exception{
+    public static String nextString(byte [] array, int [] offset) {
         int temp = offset[0];
         while(array[offset[0]++] != 0);
+        try{
         return new String(array,temp,offset[0]-temp,"UTF-8");
+        }
+        catch(Exception e)
+        {return null;
+        }
         
     }
     public static byte nextNum1(byte [] array, int [] offset){
@@ -189,6 +192,19 @@ public class Receiver implements Runnable{
         return res;
         
     }
+    
+    public static float nextFloat4(byte [] array, int [] offset){
+        
+        int res=((int)array[offset[0]] & 0x000000ff)|
+                ((((int)array[offset[0]+1])<<8) & 0x0000ff00)|
+                ((((int)array[offset[0]+2])<<16) & 0x00ff0000)|
+                ((((int)array[offset[0]+3])<<24) & 0xff000000);
+        
+        offset[0]+=4;
+        return Float.intBitsToFloat(res);
+        
+    }
+    
     public static short nextNum2(byte [] array, int [] offset){
         short res=(short)(((int)array[offset[0]] & 0x00ff)|
                 ((((int)array[offset[0]+1])<<8) & 0xff00));

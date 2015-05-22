@@ -4,7 +4,10 @@
  * and open the template in the editor.
  */
 package whoisplaying;
+
+import java.net.*;
 import javax.swing.*;
+import java.util.Vector;
 /**
  *
  * @author tanmay
@@ -12,11 +15,11 @@ import javax.swing.*;
 public class Main extends javax.swing.JFrame {
     
     public JButton jb;
-    public javax.swing.table.DefaultTableModel jtm;
+    public javax.swing.table.AbstractTableModel jtm;
     public Sender sendu;
     public int status=1; // 0 means running
     public JProgressBar progi;
-    public java.util.Collection<ServerInfo> servers;
+    public java.util.Vector<ServerInfo> servers = new java.util.Vector<ServerInfo>();
     
     /**
      * Creates new form Main
@@ -24,7 +27,7 @@ public class Main extends javax.swing.JFrame {
     public Main() {
         initComponents();
         jb=jButton1;
-        jtm=(javax.swing.table.DefaultTableModel) jTable1.getModel();
+        jtm=(javax.swing.table.AbstractTableModel) jTable1.getModel();
         jTable1.getColumnModel().getColumn(0).setPreferredWidth(60);
         jTable1.getColumnModel().getColumn(1).setPreferredWidth(30);
         jTable1.getColumnModel().getColumn(2).setPreferredWidth(50);
@@ -288,70 +291,100 @@ public class Main extends javax.swing.JFrame {
                 .addComponent(jLabel2))
         );
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
+        jTable1.setModel(new javax.swing.table.AbstractTableModel()
+            {
+                String [] columnnames=
+                {"IP", "game", "map", "players", "server Name"};
 
-            },
-            new String [] {
-                "IP", "Game", "Map", "Players", "Server-Name"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
-            };
+                Class [] columntypes=
+                {java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class};
 
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
-        jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
-        jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane1.setViewportView(jTable1);
+                public Object getValueAt(int row, int column){
+                    switch(column){
+                        case 0:
+                        return servers.elementAt(row).realip.getHostAddress();
+                        case 1:
+                        return servers.elementAt(row).game;
+                        case 2:
+                        return servers.elementAt(row).map;
+                        case 3:
+                        return (servers.elementAt(row).players-servers.elementAt(row).bots) + " P + " + servers.elementAt(row).bots + " Bots";
+                        case 4:
+                        return servers.elementAt(row).name;
+                        default:
+                        return null;
+                    }
+                }
 
-        jLabel1.setText("© Dr. Tanmay Tiwari");
+                public String getColumnName(int column) {
+                    return columnnames[column];
+                }
 
-        labelStatus.setText("Error");
+                public Class getColumnClass(int columnIndex) {
+                    return columntypes[columnIndex];
+                }
+                public int getColumnCount(){
+                    return columnnames.length;
+                }
+                public int getRowCount(){
+                    return servers.size();
+                }
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(labelStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            });
+            jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
+            jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+            jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                    jTable1MouseClicked(evt);
+                }
+            });
+            jScrollPane1.setViewportView(jTable1);
+            jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+            jLabel1.setText("© Dr. Tanmay Tiwari");
+
+            labelStatus.setText("Error");
+
+            javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+            getContentPane().setLayout(layout);
+            layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane1)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addComponent(labelStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jLabel1)
+                            .addGap(2, 2, 2)))
+                    .addContainerGap())
+            );
+            layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel1)
-                        .addGap(2, 2, 2)))
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(labelStatus))
-                .addGap(4, 4, 4))
-        );
+                        .addComponent(labelStatus))
+                    .addGap(4, 4, 4))
+            );
 
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
+            pack();
+        }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if(status==0)
@@ -407,16 +440,56 @@ public class Main extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBox2ActionPerformed
 
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        // TODO add your handling code here:
+        if((evt.getClickCount()==2) && (jTable1.getSelectedRow()!=-1))
+            {   
+                ServerInfo selectedservu = servers.elementAt(jTable1.getSelectedRow());
+                try{
+                    for( java.lang.reflect.Field f : ServerInfo.class.getFields())
+                    {
+                        System.out.println(f.getName() + " = " + f.get(selectedservu));
+                    }
+                    
+                } catch(Exception e) {}
+                new ServerInfoForm(selectedservu).setVisible(true);
+            }
+
+    }//GEN-LAST:event_jTable1MouseClicked
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-
+        
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
+        /*
+        int num =0x45bfab4f;
+        num=0x22665946;
+        System.out.println(Float.intBitsToFloat(num));
+        System.exit(0);
+        int fb = num >> 31; // 0/-1 for pos/neg
+        double ans;
+        System.out.println("fb " + fb);
+        
+        int frac = num & 0x007fffff;
+        
+        double sign = ((fb==0)?(1):(-1));
+        
+        double fractu =1;
+        for(int i = 1 ; i<=23; i++){
+            
+        }
+        
+        
+        System.out.println("c " + ~(1));
+        System.exit(0);
+        */
+        
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 //System.out.println(info.getName());

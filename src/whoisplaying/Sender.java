@@ -35,12 +35,15 @@ public class Sender implements Runnable {
         try{
             System.out.println("Starting Sender thread.");
             
-            if(flushOutput)
-                while(insta.jtm.getRowCount()>0)
-                    insta.jtm.removeRow(0);
-            else
-                insta.jtm.addRow(new String[] {"----"});
-
+            //if(flushOutput)
+            //    while(insta.jtm.getRowCount()>0)
+           //         insta.jtm.removeRow(0);
+            //else
+            //    insta.jtm.addRow(new String[] {"----"});
+            
+            
+            insta.servers.clear();
+            
             byte[] sendData = new byte[queryStr.length()/2];
             for(int i = 0; i< queryStr.length()/2;i++){
                 sendData[i]=(byte)Integer.parseInt(queryStr.substring(2*i,2*i+2),16);
@@ -71,30 +74,25 @@ public class Sender implements Runnable {
 
 
                 packet.setPort(27015);
-                for(Object row : insta.jtm.getDataVector()){
+                for(Object row : insta.servers){
                     try{
-                        String s=(String)((Vector)row).elementAt(0);
-                        if(s.startsWith("1")){
-                            packet.setAddress(InetAddress.getByName(s));
-                            datagramSocket.send(packet);
-                        }
+                        ServerInfo s=((ServerInfo)row);
+                        
+                        packet.setAddress(s.realip);
+                        datagramSocket.send(packet);
+                    
                     }catch(Exception e){}
 
                 }
             }catch(java.io.IOException e)
             {
-                insta.jtm.addRow(new String[] {"Network error."});
+                //insta.jtm.addRow(new String[] {"Network error.","Network error.","Network error.","Network error.","Network error.","Network error.","Network error.","Network error.","Network error.","Network error."});
             }
             
             packet.setPort(27015);
             if(sr.scanSelf){
-                System.out.println("SELF");
-                ip[0]=127;
-                ip[1]=0;
-                ip[2]=0;
-                ip[3]=1;
                 
-                packet.setAddress(InetAddress.getByAddress(ip));
+                packet.setAddress(InetAddress.getLocalHost());
                 datagramSocket.send(packet);
                 insta.progi.setValue(insta.progi.getValue()+1);
             }
@@ -171,7 +169,7 @@ public class Sender implements Runnable {
         }
         catch(java.io.IOException e)
         {
-            insta.jtm.addRow(new String[] {"Network error."});
+            //insta.jtm.addRow(new String[] {"Network error."});
             insta.status=2;
             status=1;
             stop();
