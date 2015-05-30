@@ -5,6 +5,11 @@
  */
 package whoisplaying;
 
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.net.*;
 import javax.swing.*;
 import java.util.Vector;
@@ -17,10 +22,10 @@ public class Main extends javax.swing.JFrame {
     public JButton jb;
     public javax.swing.table.AbstractTableModel jtm;
     public Sender sendu;
-    public int status=1; // 0 means running
+    public int status=1; // 0 means running , 1 means stopped, 2 means stopping
     public JProgressBar progi;
     public java.util.Vector<ServerInfo> servers = new java.util.Vector<ServerInfo>();
-    
+    public int statusLevel=0;       //Level of info : 0 for empty, 2 for tip, 4 for warning/info, 6 for error
     /**
      * Creates new form Main
      */
@@ -29,12 +34,36 @@ public class Main extends javax.swing.JFrame {
         jb=jButton1;
         jtm=(javax.swing.table.AbstractTableModel) jTable1.getModel();
         jTable1.getColumnModel().getColumn(0).setPreferredWidth(60);
-        jTable1.getColumnModel().getColumn(1).setPreferredWidth(30);
-        jTable1.getColumnModel().getColumn(2).setPreferredWidth(50);
-        jTable1.getColumnModel().getColumn(3).setPreferredWidth(50);
-        jTable1.getColumnModel().getColumn(4).setPreferredWidth(30);
+        jTable1.getColumnModel().getColumn(1).setPreferredWidth(1);
+        jTable1.getColumnModel().getColumn(2).setPreferredWidth(30);
+        jTable1.getColumnModel().getColumn(3).setPreferredWidth(30);
+        jTable1.getColumnModel().getColumn(4).setPreferredWidth(50);
+        jTable1.getColumnModel().getColumn(5).setPreferredWidth(30);
         progi = jProgressBar1;
+        
+        reportInfo("Click Scan button to start.",1);
     }
+    
+    public void reportError(Exception e){
+        labelStatus.setText("Error: " + e.getMessage());
+        statusLevel=6;
+        e.printStackTrace();
+    }
+    
+    public void reportInfo(String info, int level){
+        if (level >= statusLevel){
+            labelStatus.setText(info);
+            statusLevel=level;
+        }
+        System.out.println("Info [Level " + level + "]: " + info);
+    }
+    
+    public void clearInfo(){
+        labelStatus.setText("");
+        statusLevel=0;
+        System.out.println("Info cleared");
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -312,22 +341,24 @@ public class Main extends javax.swing.JFrame {
         jTable1.setModel(new javax.swing.table.AbstractTableModel()
             {
                 String [] columnnames=
-                {"IP", "Game", "Map", "Players", "Server-Name"};
+                {"IP", "Password", "Game", "Map", "Players", "Server-Name"};
 
                 Class [] columntypes=
-                {java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class};
+                {java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class};
 
                 public Object getValueAt(int row, int column){
                     switch(column){
                         case 0:
                         return servers.elementAt(row).realip.getHostAddress();
                         case 1:
-                        return servers.elementAt(row).game;
+                        return ((servers.elementAt(row).visibility==0)?("No"):("Yes"));
                         case 2:
-                        return servers.elementAt(row).map;
+                        return servers.elementAt(row).game;
                         case 3:
-                        return (servers.elementAt(row).players-servers.elementAt(row).bots) + " P + " + servers.elementAt(row).bots + " Bots";
+                        return servers.elementAt(row).map;
                         case 4:
+                        return (servers.elementAt(row).players-servers.elementAt(row).bots) + " P + " + servers.elementAt(row).bots + " Bots";
+                        case 5:
                         return servers.elementAt(row).name;
                         default:
                         return null;
@@ -405,16 +436,24 @@ public class Main extends javax.swing.JFrame {
         }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if(status==0)
+        
+        
+        
+        if(status==0)       //if running, make it 'stopping'
         {
+            reportInfo("Stopping scan.",5);
             status=2;
             sendu.status=1;
             return;
         }
-        if(status==2)
+        if(status==2)       //if stopping, do nothing
         {
+            reportInfo("Can you be a little patient?",5);
             return;
         }
+        
+        clearInfo();
+        
         boolean scanC,scanB,scanA;
         int minc3,  maxc3,  minb2,  maxb2, minb3,  maxb3,  mina2,  maxa2,  mina3,  maxa3;       
         
@@ -444,6 +483,7 @@ public class Main extends javax.swing.JFrame {
         
         
         ScanRange sr = new ScanRange( scanC,scanB,scanA,minc3,  maxc3,  minb2,  maxb2, minb3,  maxb3,  mina2,  maxa2,  mina3,  maxa3, checkLoopBack.isSelected(),this.checkBroadcast.isSelected(),this.checkPrev.isSelected());
+        
         sendu=new Sender(this,sr,Integer.parseInt(textPort.getText()));
         new Thread(sendu,"SenderThread").start();
         jButton1.setText("Stop");
@@ -460,7 +500,7 @@ public class Main extends javax.swing.JFrame {
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         // TODO add your handling code here:
-        if((evt.getClickCount()==2) && (jTable1.getSelectedRow()!=-1))
+        if((evt.getClickCount()==2) && (evt.getButton() == MouseEvent.BUTTON1) && (jTable1.getSelectedRow()!=-1))
             {   
                 ServerInfo selectedservu = servers.elementAt(jTable1.getSelectedRow());
                 
@@ -484,7 +524,7 @@ public class Main extends javax.swing.JFrame {
                 
 
             }
-
+        
     }//GEN-LAST:event_jTable1MouseClicked
 
     /**

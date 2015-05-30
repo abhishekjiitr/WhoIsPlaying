@@ -57,7 +57,7 @@ public class Sender implements Runnable {
                         packet.setAddress(s.realip);
                         datagramSocket.send(packet);
                     
-                    }catch(Exception e){reportError(e);}
+                    }catch(Exception e){insta.reportError(e);}
 
                 }
             }
@@ -86,7 +86,7 @@ public class Sender implements Runnable {
                     datagramSocket.send(packet);
                 }catch(java.io.IOException e)
                 {
-                    reportError(e);
+                    insta.reportError(e);
                 }
             }
             
@@ -98,7 +98,7 @@ public class Sender implements Runnable {
                     datagramSocket.send(packet);
                 }catch(Exception e)
                 {
-                    reportError(e);
+                    insta.reportError(e);
                 }
             }
             
@@ -127,7 +127,7 @@ public class Sender implements Runnable {
 
                 }
             }catch(Exception e){
-                reportError(e);
+                insta.reportError(e);
             }
             
             try{
@@ -155,7 +155,7 @@ public class Sender implements Runnable {
                 }
             }catch(Exception e){
                 
-                reportError(e);
+                insta.reportError(e);
             }
             
             try{
@@ -182,14 +182,14 @@ public class Sender implements Runnable {
                     }
                 }
             }catch(Exception e){
-                reportError(e);
+                insta.reportError(e);
             }
             
             
         }
         catch(Exception e)
         {
-            reportError(e);
+            insta.reportError(e);
         }
         
             insta.status=2;
@@ -205,10 +205,7 @@ public class Sender implements Runnable {
         rec.status=1;
         
     }
-    public void reportError(Exception e){
-        insta.labelStatus.setText("Error: " + e.getMessage());
-        e.printStackTrace();
-    }
+    
 }
  
 

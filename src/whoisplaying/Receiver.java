@@ -45,11 +45,17 @@ public class Receiver implements Runnable{
             
         }catch(Exception e)
         {
-            e.printStackTrace();
+            insta.reportError(e);
         }
         
         insta.progi.setValue(0);
         insta.status=1;
+        
+        if(count==0)
+            insta.reportInfo("No Servers found.",4);
+        else
+            insta.reportInfo("Double click on entry for more info.",2);
+        
         insta.jb.setText("Scan");
     }
     

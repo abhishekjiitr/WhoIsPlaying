@@ -80,10 +80,10 @@ public class ServerInfoPanel extends javax.swing.JPanel {
 
         switch(serverinfo.visibility){
             case 0:
-                this.textPassword.setText("Public");
+                this.textPassword.setText("No");
                 break;
             case 1:
-                this.textPassword.setText("Private");
+                this.textPassword.setText("Yes");
                 break;
             default :
                 this.textPassword.setText("Unknown");
@@ -169,7 +169,7 @@ public class ServerInfoPanel extends javax.swing.JPanel {
             }
 
         });
-        tablePlayers.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        tablePlayers.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         tablePlayers.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(tablePlayers);
         tablePlayers.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
