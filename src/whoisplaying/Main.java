@@ -11,14 +11,22 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.*;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
+import java.util.TimerTask;
 import java.util.Vector;
+import java.util.Timer;
+
 /**
  *
  * @author tanmay
+ * @small edit by abhishek
+ * 
  */
 public class Main extends javax.swing.JFrame {
-    
+	static int count = 0;
     public JButton jb;
     public javax.swing.table.AbstractTableModel jtm;
     public Sender sendu;
@@ -28,8 +36,9 @@ public class Main extends javax.swing.JFrame {
     public int statusLevel=0;       //Level of info : 0 for empty, 2 for tip, 4 for warning/info, 6 for error
     /**
      * Creates new form Main
+     * @throws InterruptedException 
      */
-    public Main() {
+    public Main() throws InterruptedException {
         initComponents();
         jb=jButton1;
         jtm=(javax.swing.table.AbstractTableModel) jTable1.getModel();
@@ -39,11 +48,28 @@ public class Main extends javax.swing.JFrame {
         jTable1.getColumnModel().getColumn(3).setPreferredWidth(30);
         jTable1.getColumnModel().getColumn(4).setPreferredWidth(50);
         jTable1.getColumnModel().getColumn(5).setPreferredWidth(30);
+        //jTable1.setAutoCreateRowSorter(true);
+
         progi = jProgressBar1;
         
         reportInfo("Click Scan button to start.",1);
+        // Function: To scan initially when the app just starts
+        scan(); // Initial Scan
+        // Scheduling application to run at regular intervals of half minute AKA 30 secs..
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask()
+        {
+        	public void run()
+        	{
+        		scan();
+        				  // put the code you want to run periodically here
+        	}			  // Change first argument to set inital delay
+        }, 30000, 30000); // Change last argument to set period of calling function again and again
     }
-    
+    public void scan(){
+        jButton1.doClick();
+
+    }
     public void reportError(Exception e){
         labelStatus.setText("Error: " + e.getMessage());
         statusLevel=6;
@@ -51,6 +77,11 @@ public class Main extends javax.swing.JFrame {
     }
     
     public void reportInfo(String info, int level){
+    	if (info.length() < 28 )   // A thing to bring consistency in printing label at bottom right
+    		{					   // When string info length changes it moves. See if you can improve it.
+    			for ( int i = 0 ; i < 36 - info.length() ; i++ )
+    				info += "";
+    		}
         if (level >= statusLevel){
             labelStatus.setText(info);
             statusLevel=level;
@@ -116,7 +147,6 @@ public class Main extends javax.swing.JFrame {
         };
         jLabel1 = new javax.swing.JLabel();
         labelStatus = new javax.swing.JLabel();
-
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Who is playing?");
         setBounds(new java.awt.Rectangle(100, 100, 400, 600));
@@ -126,6 +156,7 @@ public class Main extends javax.swing.JFrame {
         jButton1.setText("Scan");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
+            	count++;
                 jButton1ActionPerformed(evt);
             }
         });
@@ -390,10 +421,9 @@ public class Main extends javax.swing.JFrame {
             jScrollPane1.setViewportView(jTable1);
             jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-            jLabel1.setText("© Dr. Tanmay Tiwari");
+            jLabel1.setText("Scanned " + count + " times" + " | © Dr. Tanmay Tiwari");
 
             labelStatus.setText("Click Scan to Start.");
-
             javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
             getContentPane().setLayout(layout);
             layout.setHorizontalGroup(
@@ -437,11 +467,10 @@ public class Main extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         
-        
-        
+        jLabel1.setText("Scanned " + count + " times" + " | © Dr. Tanmay Tiwari");
         if(status==0)       //if running, make it 'stopping'
         {
-            reportInfo("Stopping scan.",5);
+            reportInfo("Stopping scan.              ",5);
             status=2;
             sendu.status=1;
             return;
@@ -560,7 +589,12 @@ public class Main extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Main().setVisible(true);
+                try {
+					new Main().setVisible(true);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         });
     }
@@ -569,7 +603,7 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JCheckBox checkBroadcast;
     private javax.swing.JCheckBox checkLoopBack;
     private javax.swing.JCheckBox checkPrev;
-    private javax.swing.JButton jButton1;
+    private static javax.swing.JButton jButton1;
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JCheckBox jCheckBox2;
     private javax.swing.JCheckBox jCheckBox3;
